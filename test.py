@@ -1,20 +1,22 @@
 import time
+import os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+import json
 
 # WINDOWS
-# service = webdriver.ChromeService('./chromedriver.exe')
+service = webdriver.ChromeService('./chromedriver.exe')
 
 # LINUX
-service = webdriver.ChromeService('./chromedriver-linux64/chromedriver')
+# service = webdriver.ChromeService('./chromedriver-linux64/chromedriver')
 
 options = webdriver.ChromeOptions()
 options.add_argument('--start-maximized')
 
 # LINUX
 # options.add_argument('--headless')
-options.binary_location = './chrome-linux64/chrome'
+# options.binary_location = './chrome-linux64/chrome'
 
 driver = webdriver.Chrome(service=service, options=options)
 
