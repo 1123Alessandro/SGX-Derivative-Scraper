@@ -8,9 +8,16 @@ import json
 # WINDOWS
 # service = webdriver.ChromeService('./chromedriver.exe')
 
-def option_select(driver, xpath, option):
+def option_select(driver, xpath, option=None):
     options = driver.find_element(By.XPATH, xpath)
     entries = options.get_property('_options')
+
+    if option == None:
+        return {
+            'element': options,
+            'entries': json.dumps(entries)
+        }
+
     for i in entries:
         if i['label'] == option:
             i['selected'] = True
@@ -39,7 +46,7 @@ def fetch_data():
     driver.implicitly_wait(5)
 
     # time.sleep(3)
-    new_dates = option_select(driver, '//*[@id="page-container"]/template-base/div/div/section[1]/div/sgx-widgets-wrapper/widget-research-and-reports-download[1]/widget-reports-derivatives-tick-and-trade-cancellation/div/sgx-input-select[2]/sgx-select-model', '05 Mar 2024')
+    new_dates = option_select(driver, '//*[@id="page-container"]/template-base/div/div/section[1]/div/sgx-widgets-wrapper/widget-research-and-reports-download[1]/widget-reports-derivatives-tick-and-trade-cancellation/div/sgx-input-select[2]/sgx-select-model')
 
     driver.execute_script(f"arguments[0]._options = {new_dates['entries']}", new_dates['element'])
 
