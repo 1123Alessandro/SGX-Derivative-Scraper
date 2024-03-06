@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+from airflow.operators.bash import BashOperator
 from downloader import fetch_data
 
 def testing():
@@ -24,4 +25,10 @@ a = PythonOperator(
     dag=dag
 )
 
-a
+b = BashOperator(
+    task_id = 'move_downloads',
+    bash_command = 'mv ${AIRFLOW_HOME}/diels/* ${AIRFLOW_HOME}/archive/',
+    dag=dag
+)
+
+a >> b
