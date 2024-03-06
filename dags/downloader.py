@@ -8,6 +8,20 @@ import json
 # WINDOWS
 # service = webdriver.ChromeService('./chromedriver.exe')
 
+def option_select(driver, xpath, option):
+    options = driver.find_element(By.XPATH, xpath)
+    entries = options.get_property('_options')
+    for i in entries:
+        if i['label'] == option:
+            i['selected'] = True
+        else:
+            i['selected'] = False
+
+    return {
+        'element': options,
+        'entries': json.dumps(entries)
+    }
+
 def fetch_data():
 
     service = webdriver.ChromeService('./chromedriver-linux64/chromedriver')
@@ -22,22 +36,18 @@ def fetch_data():
     driver = webdriver.Chrome(service=service, options=options)
 
     driver.get('https://www.sgx.com/research-education/derivatives')
+    driver.implicitly_wait(5)
 
-    time.sleep(3)
-    dates = driver.find_element(By.XPATH, '//*[@id="page-container"]/template-base/div/div/section[1]/div/sgx-widgets-wrapper/widget-research-and-reports-download[1]/widget-reports-derivatives-tick-and-trade-cancellation/div/sgx-input-select[2]/sgx-select-model')
+    # time.sleep(3)
+    new_dates = option_select(driver, '//*[@id="page-container"]/template-base/div/div/section[1]/div/sgx-widgets-wrapper/widget-research-and-reports-download[1]/widget-reports-derivatives-tick-and-trade-cancellation/div/sgx-input-select[2]/sgx-select-model', '05 Mar 2024')
 
-    entries = dates.get_property('_options')
-    for i in entries:
-        i['selected'] = False
-
-    raw = json.dumps(entries)
-    driver.execute_script(f"arguments[0]._options = {raw}", dates)
+    driver.execute_script(f"arguments[0]._options = {new_dates['entries']}", new_dates['element'])
 
     types = driver.find_element(By.XPATH, '//*[@id="page-container"]/template-base/div/div/section[1]/div/sgx-widgets-wrapper/widget-research-and-reports-download[1]/widget-reports-derivatives-tick-and-trade-cancellation/div/sgx-input-select[1]/sgx-select-model')
 
     entries = types.get_property('_options')
-    for i in entries:
-        i['selected'] = False
+    # for i in entries:
+    # i['selected'] = False
 
     raw = json.dumps(entries)
 
@@ -46,4 +56,4 @@ def fetch_data():
     button = driver.find_element(By.XPATH, '//*[@id="page-container"]/template-base/div/div/section[1]/div/sgx-widgets-wrapper/widget-research-and-reports-download[1]/widget-reports-derivatives-tick-and-trade-cancellation/div/button')
     driver.execute_script('arguments[0].click()', button)
 
-    time.sleep(5)
+    time.sleep(10)
