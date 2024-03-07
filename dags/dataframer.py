@@ -2,6 +2,10 @@ import pandas as pd
 import os
 import re
 
+def save_parq(df):
+    home = os.getcwd()
+    df.to_parquet(os.path.join(home, 'details/') + 'tracker.parquet')
+
 def record(date):
     home = os.getcwd()
     dir = os.path.join(home, 'details')
@@ -23,11 +27,11 @@ def record(date):
             tracker = m.group()
 
     if tracker == None:
-        pd.DataFrame(dic, index=date).to_parquet(os.path.join(home, 'details/') + 'tracker.parquet')
+        save_parq(pd.DataFrame(dic, index=date))
     else:
         tracker = pd.read_parquet(os.path.join(home, 'details/') + tracker)
         curr = pd.DataFrame(dic, index=date)
-        pd.concat([tracker, curr]).to_parquet(os.path.join(home, 'details/') + 'tracker.parquet')
+        save_parq(pd.concat([tracker, curr]))
 
     return tracker
 
