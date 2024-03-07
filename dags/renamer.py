@@ -9,6 +9,8 @@ def rename_downloads():
     for dir, subd, file in os.walk(dl_dir):
         for f in file:
             m = re.search('(?P<fn>TickData_structure|TC_structure)\.dat', f)
+            if m == None:
+                continue
             filename = m.group('fn')
             date = datetime.now()
             strdate = date.strftime('%Y%m%d')
