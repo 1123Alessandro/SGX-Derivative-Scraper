@@ -25,7 +25,19 @@ def rename_downloads():
     tracker.loc[rec.index] = rec
     save_parq(tracker)
 
+def move_downloads():
+    dl_dir = os.path.join(os.getcwd(), 'diels')
+    archive_dir = os.path.join(os.getcwd(), 'archive')
+
+    for dir, subd, file in os.walk(dl_dir):
+        for f in file:
+            m = re.search('.+\..+', f)
+            filename = m.group()
+
+            os.rename(f"{dl_dir}/{filename}", f"{archive_dir}/{filename}")
+
 if __name__ == '__main__':
-    rename_downloads()
+    move_downloads()
+    # rename_downloads()
 
 # python3 dags/renamer.py

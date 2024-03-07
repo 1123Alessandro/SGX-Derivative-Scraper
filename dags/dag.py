@@ -3,7 +3,7 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
 from downloader import fetch_data
-from renamer import rename_downloads
+from renamer import rename_downloads, move_downloads
 from json_reader import to_dict
 
 def testing():
@@ -28,7 +28,7 @@ day = datetime.now().strftime('%d %b %Y')
 a = PythonOperator(
     task_id = 'fetch_data',
     python_callable = fetch_data,
-    op_args = [day],
+    op_args = [None],
     dag=dag
 )
 
@@ -38,9 +38,9 @@ b = PythonOperator(
     dag=dag
 )
 
-c = BashOperator(
+c = PythonOperator(
     task_id = 'move_downloads',
-    bash_command = 'mv ${AIRFLOW_HOME}/diels/* ${AIRFLOW_HOME}/archive/',
+    python_callable = move_downloads,
     dag=dag
 )
 
