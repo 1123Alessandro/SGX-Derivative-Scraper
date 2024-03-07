@@ -20,7 +20,7 @@ def tracker_exists():
                 return True
     return False
 
-def record(date, notfound):
+def record(date, notfound, dd):
     home = os.getcwd()
     dir = os.path.join(home, 'details')
     val = -1 if notfound else None
@@ -28,7 +28,8 @@ def record(date, notfound):
         'Tick': val,
         'Tick Data Structure': val,
         'Trade Cancellation': val,
-        'Trade Cancellation Data Structure': val
+        'Trade Cancellation Data Structure': val,
+        'String Date': dd
     }
 
     tracker = None

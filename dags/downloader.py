@@ -61,7 +61,8 @@ def fetch_data(dd):
     for i in json.loads(new_dates['entries']):
         if i['selected'] == True:
             date = parse_date(i['label']).strftime('%Y%m%d')
-    record([date], not new_dates['found'])
+            dd = i['label']
+    record([date], not new_dates['found'], dd)
 
     for i in ['Tick', 'Tick Data Structure', 'Trade Cancellation', 'Trade Cancellation Data Structure']:
         new_types = option_select(driver, '//*[@id="page-container"]/template-base/div/div/section[1]/div/sgx-widgets-wrapper/widget-research-and-reports-download[1]/widget-reports-derivatives-tick-and-trade-cancellation/div/sgx-input-select[1]/sgx-select-model', i)
