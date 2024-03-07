@@ -7,6 +7,8 @@ def rename_downloads():
     dl_dir = os.path.join(os.getcwd(), 'diels')
     tracker = read_parq()
     rec = tracker[tracker.isna().any(axis=1)]
+    if rec.shape[0] == 0:
+        return None
     strdate = rec.index[0]
 
     for dir, subd, file in os.walk(dl_dir):

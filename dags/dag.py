@@ -9,6 +9,8 @@ from json_reader import to_dict
 def testing():
     return datetime.now()
 
+config = to_dict('config.json')
+
 dag = DAG(
     'SGX-Derivatives',
     default_args = {
@@ -17,18 +19,18 @@ dag = DAG(
         'retry_delay': timedelta(seconds=30),
     },
     start_date = datetime(2024, 3, 5),
-    schedule = timedelta(minutes=30),
+    schedule = timedelta(days=1),
     catchup = False,
 )
+
+day = datetime.now().strftime('%d %b %Y')
 
 a = PythonOperator(
     task_id = 'fetch_data',
     python_callable = fetch_data,
-    op_args = [None],
+    op_args = [day],
     dag=dag
 )
-
-# TODO: rename some downloaded files first to add date labels
 
 b = PythonOperator(
     task_id = 'rename_downloads',
@@ -42,8 +44,7 @@ c = BashOperator(
     dag=dag
 )
 
-conf = to_dict('config.json')
-if conf['test']:
+if config['test']:
     d = BashOperator(
         task_id = 'positive',
         bash_command = 'echo hello world',
