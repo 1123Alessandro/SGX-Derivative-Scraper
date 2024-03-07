@@ -4,6 +4,7 @@ from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
 from downloader import fetch_data
 from renamer import rename_downloads
+from json_reader import to_dict
 
 def testing():
     return datetime.now()
@@ -40,5 +41,19 @@ c = BashOperator(
     bash_command = 'mv ${AIRFLOW_HOME}/diels/* ${AIRFLOW_HOME}/archive/',
     dag=dag
 )
+
+conf = to_dict('config.json')
+if conf['test']:
+    d = BashOperator(
+        task_id = 'positive',
+        bash_command = 'echo hello world',
+        dag=dag
+    )
+else:
+    d = BashOperator(
+        task_id = 'negative',
+        bash_command = 'echo negative',
+        dag=dag
+    )
 
 a >> b >> c
