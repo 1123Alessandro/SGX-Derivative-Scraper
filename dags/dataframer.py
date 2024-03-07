@@ -47,7 +47,10 @@ def record(date, notfound, dd):
     else:
         tracker = pd.read_parquet(os.path.join(home, 'details/') + tracker)
         curr = pd.DataFrame(dic, index=date)
-        save_parq(pd.concat([tracker, curr]))
+        if tracker[tracker.index == date].shape[0] > 0:
+            tracker.loc[date] = curr
+        else:
+            save_parq(pd.concat([tracker, curr]))
 
     return tracker
 
