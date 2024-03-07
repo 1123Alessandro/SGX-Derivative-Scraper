@@ -5,7 +5,6 @@ from dataframer import read_parq, save_parq
 
 def rename_downloads():
     dl_dir = os.path.join(os.getcwd(), 'diels')
-    print(dl_dir)
     tracker = read_parq()
     rec = tracker[tracker.isna().any(axis=1)]
     strdate = rec.index[0]
@@ -20,7 +19,7 @@ def rename_downloads():
             os.rename(f"{dl_dir}/{filename}.dat", f"{dl_dir}/{new_fn}.dat")
 
     for i in ['Tick', 'Tick Data Structure', 'Trade Cancellation', 'Trade Cancellation Data Structure']:
-        rec[i] = 1
+        rec[i] = 'Okay'
     tracker.loc[rec.index] = rec
     save_parq(tracker)
 

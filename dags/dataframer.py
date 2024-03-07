@@ -23,7 +23,7 @@ def tracker_exists():
 def record(date, notfound, dd):
     home = os.getcwd()
     dir = os.path.join(home, 'details')
-    val = -1 if notfound else None
+    val = 'No Download' if notfound else None
     dic = {
         'Tick': val,
         'Tick Data Structure': val,
@@ -49,6 +49,7 @@ def record(date, notfound, dd):
         curr = pd.DataFrame(dic, index=date)
         if tracker[tracker.index == date].shape[0] > 0:
             tracker.loc[date] = curr
+            save_parq(tracker)
         else:
             save_parq(pd.concat([tracker, curr]))
 
