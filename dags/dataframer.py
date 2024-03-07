@@ -10,6 +10,16 @@ def read_parq():
     home = os.getcwd()
     return pd.read_parquet(os.path.join(home, 'details/') + 'tracker.parquet')
 
+def tracker_exists():
+    home = os.getcwd()
+    dir = os.path.join(home, 'details')
+    for dir, subd, file in os.walk(dir):
+        for f in file:
+            m = re.search('.+\.parquet', f)
+            if m != None:
+                return True
+    return False
+
 def record(date, notfound):
     home = os.getcwd()
     dir = os.path.join(home, 'details')
@@ -41,4 +51,5 @@ def record(date, notfound):
     return tracker
 
 if __name__ == '__main__':
-    print(record(['20240312']))
+    # print(record(['20240312']))
+    print(tracker_exists())
