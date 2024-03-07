@@ -16,13 +16,14 @@ dag = DAG(
         'retry_delay': timedelta(seconds=30),
     },
     start_date = datetime(2024, 3, 5),
-    schedule = timedelta(minutes=10),
+    schedule = timedelta(minutes=30),
     catchup = False,
 )
 
 a = PythonOperator(
     task_id = 'fetch_data',
     python_callable = fetch_data,
+    op_args = [None],
     dag=dag
 )
 

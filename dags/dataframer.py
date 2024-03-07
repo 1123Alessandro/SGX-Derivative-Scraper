@@ -6,14 +6,19 @@ def save_parq(df):
     home = os.getcwd()
     df.to_parquet(os.path.join(home, 'details/') + 'tracker.parquet')
 
-def record(date):
+def read_parq():
+    home = os.getcwd()
+    return pd.read_parquet(os.path.join(home, 'details/') + 'tracker.parquet')
+
+def record(date, notfound):
     home = os.getcwd()
     dir = os.path.join(home, 'details')
+    val = -1 if notfound else None
     dic = {
-        'Tick': None,
-        'Tick Data Structure': None,
-        'Trade Cancellation': None,
-        'Trade Cancellation Data Structure': None
+        'Tick': val,
+        'Tick Data Structure': val,
+        'Trade Cancellation': val,
+        'Trade Cancellation Data Structure': val
     }
 
     tracker = None

@@ -14,24 +14,28 @@ def option_select(driver, xpath, option=None):
     options = driver.find_element(By.XPATH, xpath)
     entries = options.get_property('_options')
 
+    found = 0;
     if option == None:
         return {
             'element': options,
-            'entries': json.dumps(entries)
+            'entries': json.dumps(entries),
+            'found': 1
         }
 
     for i in entries:
         if i['label'] == option:
             i['selected'] = True
+            found = 1
         else:
             i['selected'] = False
 
     return {
         'element': options,
-        'entries': json.dumps(entries)
+        'entries': json.dumps(entries),
+        'found': found
     }
 
-def fetch_data():
+def fetch_data(dd):
 
     service = webdriver.ChromeService('./chromedriver-linux64/chromedriver')
     options = webdriver.ChromeOptions()
@@ -49,13 +53,15 @@ def fetch_data():
 
     # time.sleep(3)
     # TODO: loop through each required type to download
-    new_dates = option_select(driver, '//*[@id="page-container"]/template-base/div/div/section[1]/div/sgx-widgets-wrapper/widget-research-and-reports-download[1]/widget-reports-derivatives-tick-and-trade-cancellation/div/sgx-input-select[2]/sgx-select-model')
+    new_dates = option_select(driver, '//*[@id="page-container"]/template-base/div/div/section[1]/div/sgx-widgets-wrapper/widget-research-and-reports-download[1]/widget-reports-derivatives-tick-and-trade-cancellation/div/sgx-input-select[2]/sgx-select-model', dd)
     driver.execute_script(f"arguments[0]._options = {new_dates['entries']}", new_dates['element'])
     date = ''
+    if not new_dates['found']:
+        date = parse_date(dd).strftime('%Y%m%d')
     for i in json.loads(new_dates['entries']):
         if i['selected'] == True:
             date = parse_date(i['label']).strftime('%Y%m%d')
-    record([date])
+    record([date], not new_dates['found'])
 
     for i in ['Tick', 'Tick Data Structure', 'Trade Cancellation', 'Trade Cancellation Data Structure']:
         new_types = option_select(driver, '//*[@id="page-container"]/template-base/div/div/section[1]/div/sgx-widgets-wrapper/widget-research-and-reports-download[1]/widget-reports-derivatives-tick-and-trade-cancellation/div/sgx-input-select[1]/sgx-select-model', i)
