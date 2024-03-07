@@ -3,6 +3,7 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
 from downloader import fetch_data
+from renamer import rename_downloads
 
 def testing():
     return datetime.now()
@@ -20,15 +21,23 @@ dag = DAG(
 )
 
 a = PythonOperator(
-    task_id = 'entrance',
+    task_id = 'fetch_data',
     python_callable = fetch_data,
     dag=dag
 )
 
-b = BashOperator(
+# TODO: rename some downloaded files first to add date labels
+
+b = PythonOperator(
+    task_id = 'rename_downloads',
+    python_callable = rename_downloads,
+    dag=dag
+)
+
+c = BashOperator(
     task_id = 'move_downloads',
     bash_command = 'mv ${AIRFLOW_HOME}/diels/* ${AIRFLOW_HOME}/archive/',
     dag=dag
 )
 
-a >> b
+a >> b >> c
