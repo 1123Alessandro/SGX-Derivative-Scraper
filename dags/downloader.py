@@ -4,6 +4,8 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import json
+from date_parser import parse_date
+from dataframer import record
 
 # WINDOWS
 # service = webdriver.ChromeService('./chromedriver.exe')
@@ -49,6 +51,11 @@ def fetch_data():
     # TODO: loop through each required type to download
     new_dates = option_select(driver, '//*[@id="page-container"]/template-base/div/div/section[1]/div/sgx-widgets-wrapper/widget-research-and-reports-download[1]/widget-reports-derivatives-tick-and-trade-cancellation/div/sgx-input-select[2]/sgx-select-model')
     driver.execute_script(f"arguments[0]._options = {new_dates['entries']}", new_dates['element'])
+    date = ''
+    for i in json.loads(new_dates['entries']):
+        if i['selected'] == True:
+            date = parse_date(i['label']).strftime('%Y%m%d')
+    record([date])
 
     for i in ['Tick', 'Tick Data Structure', 'Trade Cancellation', 'Trade Cancellation Data Structure']:
         new_types = option_select(driver, '//*[@id="page-container"]/template-base/div/div/section[1]/div/sgx-widgets-wrapper/widget-research-and-reports-download[1]/widget-reports-derivatives-tick-and-trade-cancellation/div/sgx-input-select[1]/sgx-select-model', i)
