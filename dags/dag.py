@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
-from downloader import fetch_data
+from downloader import *
 from renamer import rename_downloads, move_downloads
 from json_reader import to_dict
 
@@ -25,24 +25,34 @@ dag = DAG(
 
 day = datetime.now().strftime('%d %b %Y')
 
-a = PythonOperator(
-    task_id = 'fetch_data',
-    python_callable = fetch_data,
-    op_args = [None],
-    dag=dag
-)
+if config['dl_history']:
+    a = PythonOperator(
+        task_id = 'download_historical_data',
+        python_callable = fetch_available_data,
+        op_args = [day],
+        dag=dag
+    )
+else:
+    a = PythonOperator(
+        task_id = 'fetch_data',
+        python_callable = fetch_data,
+        op_args = [None],
+        dag=dag
+    )
 
-b = PythonOperator(
-    task_id = 'rename_downloads',
-    python_callable = rename_downloads,
-    dag=dag
-)
+    b = PythonOperator(
+        task_id = 'rename_downloads',
+        python_callable = rename_downloads,
+        dag=dag
+    )
 
-c = PythonOperator(
-    task_id = 'move_downloads',
-    python_callable = move_downloads,
-    dag=dag
-)
+    c = PythonOperator(
+        task_id = 'move_downloads',
+        python_callable = move_downloads,
+        dag=dag
+    )
+
+    a >> b >> c
 
 if config['test']:
     d = BashOperator(
@@ -57,4 +67,3 @@ else:
         dag=dag
     )
 
-a >> b >> c

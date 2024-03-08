@@ -6,6 +6,7 @@ from selenium.webdriver.common.keys import Keys
 import json
 from date_parser import parse_date
 from dataframer import record
+from renamer import *
 
 # WINDOWS
 # service = webdriver.ChromeService('./chromedriver.exe')
@@ -71,4 +72,28 @@ def fetch_data(dd):
         button = driver.find_element(By.XPATH, '//*[@id="page-container"]/template-base/div/div/section[1]/div/sgx-widgets-wrapper/widget-research-and-reports-download[1]/widget-reports-derivatives-tick-and-trade-cancellation/div/button')
         driver.execute_script('arguments[0].click()', button)
 
-    time.sleep(10)
+    time.sleep(5)
+    driver.quit()
+
+def fetch_available_data(dd):
+    service = webdriver.ChromeService('./chromedriver-linux64/chromedriver')
+    options = webdriver.ChromeOptions()
+    options.binary_location = './chrome-linux64/chrome'
+
+    driver = webdriver.Chrome(service=service, options=options)
+
+    driver.get('https://www.sgx.com/research-education/derivatives')
+    driver.implicitly_wait(5)
+
+    vals = driver.find_element(By.XPATH, '//*[@id="page-container"]/template-base/div/div/section[1]/div/sgx-widgets-wrapper/widget-research-and-reports-download[1]/widget-reports-derivatives-tick-and-trade-cancellation/div/sgx-input-select[2]/sgx-select-model')
+    opts = vals.get_property('_options')
+    dates = [x['label'] for x in opts]
+    dates.append(dd)
+
+    driver.quit()
+
+    print('DATES TO FETCH ==================================================')
+    print(dates)
+    for date in dates:
+        print('FETCHING ' + date + ' ==================================================')
+        fetch_data(date)
