@@ -50,7 +50,7 @@ def fetch_data(dd):
     driver = webdriver.Chrome(service=service, options=options)
 
     driver.get('https://www.sgx.com/research-education/derivatives')
-    driver.implicitly_wait(5)
+    driver.implicitly_wait(60)
 
     # time.sleep(3)
     # TODO: loop through each required type to download
@@ -83,7 +83,7 @@ def fetch_available_data(dd):
     driver = webdriver.Chrome(service=service, options=options)
 
     driver.get('https://www.sgx.com/research-education/derivatives')
-    driver.implicitly_wait(5)
+    driver.implicitly_wait(60)
 
     vals = driver.find_element(By.XPATH, '//*[@id="page-container"]/template-base/div/div/section[1]/div/sgx-widgets-wrapper/widget-research-and-reports-download[1]/widget-reports-derivatives-tick-and-trade-cancellation/div/sgx-input-select[2]/sgx-select-model')
     opts = vals.get_property('_options')
@@ -97,3 +97,5 @@ def fetch_available_data(dd):
     for date in dates:
         print('FETCHING ' + date + ' ==================================================')
         fetch_data(date)
+        rename_downloads()
+        move_downloads()

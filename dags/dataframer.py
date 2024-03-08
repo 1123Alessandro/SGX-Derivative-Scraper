@@ -23,7 +23,7 @@ def tracker_exists():
 def record(date, notfound, dd):
     home = os.getcwd()
     dir = os.path.join(home, 'details')
-    val = 'No Download' if notfound else None
+    val = 'Download Failed' if notfound else None
     dic = {
         'Tick': val,
         'Tick Data Structure': val,
