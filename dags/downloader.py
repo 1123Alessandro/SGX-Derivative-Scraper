@@ -71,6 +71,7 @@ def fetch_data(dd):
 
         button = driver.find_element(By.XPATH, '//*[@id="page-container"]/template-base/div/div/section[1]/div/sgx-widgets-wrapper/widget-research-and-reports-download[1]/widget-reports-derivatives-tick-and-trade-cancellation/div/button')
         driver.execute_script('arguments[0].click()', button)
+        time.sleep(2)
 
     time.sleep(5)
     driver.quit()
