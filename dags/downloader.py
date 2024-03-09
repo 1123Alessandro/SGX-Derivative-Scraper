@@ -5,11 +5,14 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import json
 from date_parser import parse_date
-from dataframer import record
+from dataframer import record, tracker_exists, read_parq
 from renamer import *
+from json_reader import to_dict
 
 # WINDOWS
 # service = webdriver.ChromeService('./chromedriver.exe')
+
+config = to_dict('config.json')
 
 def option_select(driver, xpath, option=None):
     options = driver.find_element(By.XPATH, xpath)
@@ -53,8 +56,6 @@ def fetch_data(dd):
     driver.implicitly_wait(60)
     time.sleep(5)
 
-    # time.sleep(3)
-    # TODO: loop through each required type to download
     new_dates = option_select(driver, '//*[@id="page-container"]/template-base/div/div/section[1]/div/sgx-widgets-wrapper/widget-research-and-reports-download[1]/widget-reports-derivatives-tick-and-trade-cancellation/div/sgx-input-select[2]/sgx-select-model', dd)
     driver.execute_script(f"arguments[0]._options = {new_dates['entries']}", new_dates['element'])
     date = ''
@@ -94,6 +95,18 @@ def fetch_available_data(dd):
     dates.append(dd)
 
     driver.quit()
+
+    if tracker_exists():
+        # remove okay from dates arr
+        tracker = read_parq()
+        ok_dates = [tracker.loc[x]['String Date'] for x in tracker[tracker[tracker == 'Okay'].any(axis=1)].index]
+        fail_dates = [tracker.loc[x]['String Date'] for x in tracker[tracker[tracker == 'Download Failed'].any(axis=1)].index]
+        dates = {d for d in dates if d not in ok_dates}
+        # add failed downloads to dates arr
+        if config['redownload_failures']:
+            print('DOWNLOADING FAILURES ==================================================')
+            for i in fail_dates:
+                dates.add(i)
 
     print('DATES TO FETCH ==================================================')
     print(dates)

@@ -1,4 +1,5 @@
 {
   "test": false,
-  "dl_history": true
+  "dl_history": true,
+  "redownload_failures": false
 }
