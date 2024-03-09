@@ -5,11 +5,15 @@ from airflow.operators.bash import BashOperator
 from downloader import *
 from renamer import rename_downloads, move_downloads
 from json_reader import to_dict
+import logging
+from logs import *
 
-def testing():
-    return datetime.now()
+logger = get_daily_log()
+logger.critical('STARTING DAG INITIALIZATION')
 
 config = to_dict('config.json')
+
+logger.info(f"config json read: {config}")
 
 dag = DAG(
     'SGX-Derivatives',

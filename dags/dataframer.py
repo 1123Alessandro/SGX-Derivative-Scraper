@@ -1,6 +1,8 @@
 import pandas as pd
 import os
 import re
+from logs import *
+logger = get_daily_log()
 
 def save_parq(df):
     home = os.getcwd()
@@ -21,6 +23,7 @@ def tracker_exists():
     return False
 
 def record(date, notfound, dd):
+    logger.info('Recording download transaction')
     home = os.getcwd()
     dir = os.path.join(home, 'details')
     val = 'Download Failed' if notfound else None
@@ -43,8 +46,10 @@ def record(date, notfound, dd):
             tracker = m.group()
 
     if tracker == None:
+        logger.info('creating a fresh tracker parquet')
         save_parq(pd.DataFrame(dic, index=date))
     else:
+        logger.info('appending to old tracker parquet')
         tracker = pd.read_parquet(os.path.join(home, 'details/') + tracker)
         curr = pd.DataFrame(dic, index=date)
         if tracker[tracker.index == date[0]].shape[0] > 0:

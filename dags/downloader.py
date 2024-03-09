@@ -8,6 +8,9 @@ from date_parser import parse_date
 from dataframer import record, tracker_exists, read_parq
 from renamer import *
 from json_reader import to_dict
+import logging
+from logs import *
+logger = get_daily_log(logging.DEBUG)
 
 # WINDOWS
 # service = webdriver.ChromeService('./chromedriver.exe')
@@ -41,6 +44,7 @@ def option_select(driver, xpath, option=None):
 
 def fetch_data(dd):
 
+    logger.info(f"Fetching data for date {dd}")
     service = webdriver.ChromeService('./chromedriver-linux64/chromedriver')
     options = webdriver.ChromeOptions()
     options.add_argument('--start-maximized')
@@ -60,6 +64,7 @@ def fetch_data(dd):
     driver.execute_script(f"arguments[0]._options = {new_dates['entries']}", new_dates['element'])
     date = ''
     if not new_dates['found']:
+        logger.debug(f"{dd} not found in list of dates")
         date = parse_date(dd).strftime('%Y%m%d')
     for i in json.loads(new_dates['entries']):
         if i['selected'] == True:
@@ -68,6 +73,7 @@ def fetch_data(dd):
     record([date], not new_dates['found'], dd)
 
     for i in ['Tick', 'Tick Data Structure', 'Trade Cancellation', 'Trade Cancellation Data Structure']:
+        logger.info(f"Downloading {i}")
         new_types = option_select(driver, '//*[@id="page-container"]/template-base/div/div/section[1]/div/sgx-widgets-wrapper/widget-research-and-reports-download[1]/widget-reports-derivatives-tick-and-trade-cancellation/div/sgx-input-select[1]/sgx-select-model', i)
         driver.execute_script(f"arguments[0]._options = {new_types['entries']}", new_types['element'])
 
@@ -104,14 +110,13 @@ def fetch_available_data(dd):
         dates = {d for d in dates if d not in ok_dates}
         # add failed downloads to dates arr
         if config['redownload_failures']:
-            print('DOWNLOADING FAILURES ==================================================')
+            logger.info('Adding failed downloads to download queue')
             for i in fail_dates:
                 dates.add(i)
 
-    print('DATES TO FETCH ==================================================')
+    logger.info(f"Dates to fetch: {dates}")
     print(dates)
     for date in dates:
-        print('FETCHING ' + date + ' ==================================================')
         fetch_data(date)
         rename_downloads()
         move_downloads()

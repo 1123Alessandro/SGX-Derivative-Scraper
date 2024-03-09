@@ -2,8 +2,12 @@ import os
 import re
 from datetime import datetime
 from dataframer import read_parq, save_parq
+import logging
+from logs import *
+logger = get_daily_log()
 
 def rename_downloads():
+    logger.info('renaming downloads')
     dl_dir = os.path.join(os.getcwd(), 'diels')
     tracker = read_parq()
     rec = tracker[tracker.isna().any(axis=1)]
@@ -26,6 +30,7 @@ def rename_downloads():
     save_parq(tracker)
 
 def move_downloads():
+    logger.info('moving downloads')
     dl_dir = os.path.join(os.getcwd(), 'diels')
     archive_dir = os.path.join(os.getcwd(), 'archive')
 
